@@ -7,7 +7,7 @@ f = lambda x: np.exp(x**2)*math.erfc(x)
 
 def du_deta_func(eta, tau, rho):
     A = rho * np.exp(-eta ** 2 * tau ** -1)
-    B = 2 * np.exp((eta + rho * tau) / tau ** 0.5) ** 2
+    B = 2 * np.exp(((eta + rho * tau) / tau ** 0.5) ** 2)
     C = (1 + rho ** -1) ** 0.5
     D = (eta - rho * (1 + rho ** -1) ** 0.5 * tau) / tau ** 0.5
     E = (eta + rho * (1 + rho ** -1) ** 0.5 * tau) / tau ** 0.5
@@ -19,7 +19,7 @@ def du_deta_func(eta, tau, rho):
 
 def u_func(eta, tau, rho):
     A = 0.5 * np.exp(-eta ** 2 * tau ** -1)
-    B = 2 * np.exp((eta + rho * tau) / tau ** 0.5) ** 2
+    B = 2 * np.exp(((eta + rho * tau) / tau ** 0.5) ** 2)
     C = (eta - rho * (1 + rho ** -1) ** 0.5 * tau) / tau ** 0.5
     D = (eta - rho * tau) / tau ** 0.5
     E = (eta + rho * (1 + rho ** -1) ** 0.5 * tau) / tau ** 0.5
