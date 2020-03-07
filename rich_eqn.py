@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import math
 
@@ -97,9 +97,8 @@ class Curve:
         return Theta_list, z_star_list
 
 class Plot:
-    def __init__(self, layers, extents):
+    def __init__(self, layers):
         self.layers = layers
-        self.extents=extents #left, right, bottom, top
         self.figure, self.ax = plt.subplots(1)
         self.create_plot()
     def create_plot(self):
@@ -129,13 +128,15 @@ def plot_Image():
     R_0_2 = Image(r'lit\R_0_2.JPG', 0.08, (0, 0.5, 5, 0))
     R_0_2.show()
 
-if __name__=='__main__':
-
+def plot_Plot():
     curves = []
     for t_star in [0.5, 2, 4, 8, 16]:
         curves.append(Curve(t_star, 1.02))
     cs = CurveSet(0.2, curves)
-    R_0_2 = Image(r'lit\R_0_2.JPG', 0.08, (0, 0.5, 5, 0))
+    R_0_2 = Image(r'lit\R_0_2.JPG', 0.1, (0, 1, 5, 0))
     l = [R_0_2, cs]
-    p = Plot(l, (0, 0.5, 5, 0))
+    p = Plot(l)
     p.show()
+
+if __name__=='__main__':
+    plot_Plot()
