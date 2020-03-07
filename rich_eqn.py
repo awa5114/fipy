@@ -3,26 +3,47 @@ import matplotlib as mpl
 import numpy as np
 import math
 
-class Layer:
+if mpl.is_interactive():
+    plt.ioff()
+else:
     pass
 
+class Layer:
+    def plot(self, ax):
+        pass
+
+    def show(self):
+        if mpl.is_interactive():
+            self.figure.show()
+        else:
+            for i in plt.get_fignums():
+                if self.figure != plt.figure(i):
+                    plt.close(plt.figure(i))
+                plt.show()
+
+
 class Image(Layer):
-    pass
+    def __init__(self, img_path, aspect, extent):
+        self.img = mpl.image.imread(img_path)
+        self.figure, self.ax = plt.subplots(1)
+        self.aspect = aspect
+        self.extent = extent
+        self.plot(self.ax)
+
+    def plot(self, ax):
+        return ax.imshow(self.img, aspect=self.aspect, extent=self.extent)
 
 class CurveSet(Layer):
     def __init__(self, R_star, curves):
         self.R_star = R_star
         self.curves = curves  # A list of Curve objects
         self.figure, self.ax = plt.subplots(1)
-        self.add_curves()
+        self.plot(self.ax)
 
-    def add_curves(self):
+    def plot(self, ax):
         for curve in self.curves:
             Theta, z_star = curve.calculate(curve.t_star, curve.C, self.R_star)
-            self.ax.plot(Theta, z_star, color='blue')
-
-    def show(self):
-        plt.show()
+            ax.plot(Theta, z_star, color='blue')
 
 class Curve:
     def __init__(self, t_star, C):
@@ -76,11 +97,45 @@ class Curve:
         return Theta_list, z_star_list
 
 class Plot:
-    def __init__(self, layers):
+    def __init__(self, layers, extents):
         self.layers = layers
+        self.extents=extents #left, right, bottom, top
+        self.figure, self.ax = plt.subplots(1)
+        self.create_plot()
+    def create_plot(self):
+        for l in self.layers:
+            l.plot(self.ax)
+    def show(self):
+        if mpl.is_interactive():
+            self.figure.show()
+        else:
+            for i in plt.get_fignums():
+                if self.figure != plt.figure(i):
+                    plt.close(plt.figure(i))
+                plt.show()
 
-curves=[]
-for t_star in [0.5, 2, 4, 8, 16]:
-    curves.append(Curve(t_star, 1.02))
-fig3_top = CurveSet(0.2,  curves)
-fig3_top.show()
+class PlotSet:
+    def __init__(self, plots):
+        self.plots = plots # each PlotSet instance contains several Plot objects
+
+def plot_CurveSet():
+    curves = []
+    for t_star in [0.5, 2, 4, 8, 16]:
+        curves.append(Curve(t_star, 1.02))
+    cs = CurveSet(0.2, curves)
+    cs.show()
+
+def plot_Image():
+    R_0_2 = Image(r'lit\R_0_2.JPG', 0.08, (0, 0.5, 5, 0))
+    R_0_2.show()
+
+if __name__=='__main__':
+
+    curves = []
+    for t_star in [0.5, 2, 4, 8, 16]:
+        curves.append(Curve(t_star, 1.02))
+    cs = CurveSet(0.2, curves)
+    R_0_2 = Image(r'lit\R_0_2.JPG', 0.08, (0, 0.5, 5, 0))
+    l = [R_0_2, cs]
+    p = Plot(l, (0, 0.5, 5, 0))
+    p.show()
