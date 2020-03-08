@@ -3,23 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-if mpl.is_interactive():
-    plt.ioff()
-else:
-    pass
-
 class Layer:
     def plot(self, ax):
         pass
 
     def show(self):
-        if mpl.is_interactive():
-            self.figure.show()
-        else:
-            for i in plt.get_fignums():
-                if self.figure != plt.figure(i):
-                    plt.close(plt.figure(i))
-                plt.show()
+
+        for i in plt.get_fignums():
+            if self.figure != plt.figure(i):
+                plt.close(plt.figure(i))
+        plt.show()
 
 
 class Image(Layer):
@@ -31,6 +24,7 @@ class Image(Layer):
         self.plot(self.ax)
 
     def plot(self, ax):
+        # plots layer to an axis object
         return ax.imshow(self.img, aspect=self.aspect, extent=self.extent)
 
 class CurveSet(Layer):
@@ -41,6 +35,7 @@ class CurveSet(Layer):
         self.plot(self.ax)
 
     def plot(self, ax):
+        # plots layer to an axis object
         for curve in self.curves:
             Theta, z_star = curve.calculate(curve.t_star, curve.C, self.R_star)
             ax.plot(Theta, z_star, color='blue')
@@ -105,13 +100,10 @@ class Plot:
         for l in self.layers:
             l.plot(self.ax)
     def show(self):
-        if mpl.is_interactive():
-            self.figure.show()
-        else:
-            for i in plt.get_fignums():
-                if self.figure != plt.figure(i):
-                    plt.close(plt.figure(i))
-                plt.show()
+        for i in plt.get_fignums():
+            if self.figure != plt.figure(i):
+                plt.close(plt.figure(i))
+        plt.show()
 
 class PlotSet:
     def __init__(self, plots):
