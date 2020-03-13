@@ -1,38 +1,49 @@
 import matplotlib as mpl
-import matplotlib.pyplot as plt
+from matplotlib import figure
 import numpy as np
 import math
+from matplotlib.backends.qt_compat import QtWidgets
+from matplotlib.backends.backend_qt5agg import (FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
 
-class Layer:
-    def plot(self, ax):
+class Showable:
+    def plot(self):
         pass
 
     def show(self):
+        ax = self.figure.subplots()
+        self.plot(ax)
 
-        for i in plt.get_fignums():
-            if self.figure != plt.figure(i):
-                plt.close(plt.figure(i))
-        plt.show()
+        app = QtWidgets.QApplication([])
+        main_window = QtWidgets.QMainWindow()
+        main_widget = QtWidgets.QWidget()
+        main_window.setCentralWidget(main_widget)
+        layout = QtWidgets.QVBoxLayout(main_widget)
+        canvas = FigureCanvas(self.figure)
+        layout.addWidget(canvas)
+        main_window.addToolBar(NavigationToolbar(canvas, main_window))
+        main_window.show()
+        app.exec_()
 
+class Layer(Showable):
+    pass
 
 class Image(Layer):
     def __init__(self, img_path, aspect, extent):
+        super().__init__()
         self.img = mpl.image.imread(img_path)
-        self.figure, self.ax = plt.subplots(1)
         self.aspect = aspect
         self.extent = extent
-        self.plot(self.ax)
-
+        self.figure = figure.Figure()
     def plot(self, ax):
         # plots layer to an axis object
         return ax.imshow(self.img, aspect=self.aspect, extent=self.extent)
 
 class CurveSet(Layer):
     def __init__(self, R_star, curves):
+        super().__init__()
         self.R_star = R_star
         self.curves = curves  # A list of Curve objects
-        self.figure, self.ax = plt.subplots(1)
-        self.plot(self.ax)
+        self.figure = figure.Figure()
 
     def plot(self, ax):
         # plots layer to an axis object
@@ -91,21 +102,17 @@ class Curve:
 
         return Theta_list, z_star_list
 
-class Plot:
+class Plot(Showable):
     def __init__(self, layers):
+        super().__init__()
         self.layers = layers
-        self.figure, self.ax = plt.subplots(1)
-        self.create_plot()
-    def create_plot(self):
-        for l in self.layers:
-            l.plot(self.ax)
-    def show(self):
-        for i in plt.get_fignums():
-            if self.figure != plt.figure(i):
-                plt.close(plt.figure(i))
-        plt.show()
+        self.figure = figure.Figure()
 
-class PlotSet:
+    def plot(self, ax):
+        for l in self.layers:
+            l.plot(ax)
+
+class PlotSet(Showable):
     def __init__(self, plots):
         self.plots = plots # each PlotSet instance contains several Plot objects
 
